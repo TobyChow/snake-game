@@ -1,6 +1,7 @@
 class Node {
-    constructor(val) {
+    constructor(val, direction) {
         this.val = val;
+        this.direction = direction;
         this.prev = null;
         this.next = null;
     }
