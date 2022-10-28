@@ -9,14 +9,15 @@ class Node {
 
 // Assumes min size of 3;
 class Snake {
-    constructor() {
-        this.head = null;
-        this.tail = null;
-        this.size = 0;
+    constructor(val, direction) {
+        const newNode = new Node(val, direction);
+        this.head = newNode;
+        this.tail = newNode;
+        this.size = 1;
     }
     // add node to tail
-    grow(val) {
-        const newNode = new Node(val);
+    grow(val, direction) {
+        const newNode = new Node(val, direction);
         newNode.prev = this.tail;
         if (!this.head) {
             this.head = newNode;
@@ -26,10 +27,10 @@ class Snake {
         this.tail = newNode;
         this.size++;
     }
-    move(val) {
+    move(val, direction) {
         // add new node to head
         // todo destruct
-        const newHead = new Node(val);
+        const newHead = new Node(val, direction);
         this.head.prev = newHead;
         newHead.next = this.head;
         this.head = newHead;

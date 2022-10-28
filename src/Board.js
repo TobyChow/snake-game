@@ -18,14 +18,13 @@ const SNAKE_DIRECTION_OPPOSITE = {
     'DOWN': 'UP'
 };
 
-const tickRate = 500; // milliseconds
+const tickRate = 200; // milliseconds, 100 or 150 is good
 
 function Board() {
     const [snake, setSnake] = useState(() => {
-        const snake = new Snake();
-        snake.grow('3-4');
-        snake.grow('2-4');
-        snake.grow('1-4');
+        const snake = new Snake('5-3', 'RIGHT');
+        snake.grow('5-2', 'RIGHT');
+        snake.grow('5-1', 'RIGHT');
         return snake;
     });
 
@@ -39,7 +38,6 @@ function Board() {
 
     useEffect(() => {
         gameTick.current = setInterval(() => {
-            console.log('a');
             // handleMove();
         }, tickRate)
         return ()=>clearInterval(gameTick.current);
@@ -57,16 +55,15 @@ function Board() {
 
     function handleMove() {
         const newHeadCoord = getDirection(snake.head.val, direction);
-        snake.move(newHeadCoord);
+        snake.move(newHeadCoord, direction);
         setSnake(snake);
         return setSnakeToBoard(snake.toArray());
     }
 
     function handleEat() {
-        // use opposite direction of head to determine where to add tail
-        const positionToAddTail = getDirection(snake.tail.val, SNAKE_DIRECTION_OPPOSITE[direction]);
-        console.log(snake.tail);
-        snake.grow(positionToAddTail);
+        // use opposite direction of tail to determine where to add new tail
+        const positionToAddTail = getDirection(snake.tail.val, SNAKE_DIRECTION_OPPOSITE[snake.tail.direction]);
+        snake.grow(positionToAddTail, snake.tail.direction);
         setSnake(snake);
         setSnakeToBoard(snake.toArray());
     }
