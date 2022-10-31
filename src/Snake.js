@@ -7,7 +7,7 @@ class Node {
     }
 }
 
-// Assumes min size of 3;
+// Must init snake with a head
 class Snake {
     constructor(val, direction) {
         const newNode = new Node(val, direction);

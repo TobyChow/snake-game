@@ -39,15 +39,29 @@ function Board() {
     useEffect(() => {
         gameTick.current = setInterval(() => {
             // handleMove();
+            console.log('tick');
         }, tickRate)
         return ()=>clearInterval(gameTick.current);
-    });
+    },[]);
 
     useEffect(() => {
-        window.addEventListener('keydown', e => {
-           handleKeydown(e); 
-        });
-    });
+        const handleKeydown = e => {
+            const key = e.key;
+            console.log(key, direction);
+            if (key === 'ArrowLeft' && direction !== 'RIGHT') {
+                setDirection(SNAKE_DIRECTION.LEFT);
+            } else if (key === 'ArrowRight' && direction !== 'LEFT') {
+                setDirection(SNAKE_DIRECTION.RIGHT);
+            } else if (key === 'ArrowUp' && direction !== 'DOWN') {
+                setDirection(SNAKE_DIRECTION.UP);
+            } else if (key === 'ArrowDown' && direction !== 'UP') {
+                setDirection(SNAKE_DIRECTION.DOWN);
+            }
+        }
+        
+        window.addEventListener('keydown', handleKeydown);
+        return () => window.removeEventListener('keydown', handleKeydown);
+    },[direction]);
 
     function setSnakeToBoard(target) {
         return setBoard(createBoard(target, 'snake'));
@@ -55,6 +69,12 @@ function Board() {
 
     function handleMove() {
         const newHeadCoord = getDirection(snake.head.val, direction);
+        // check new coord for collision
+        const isCollision = checkBoardCollision(newHeadCoord);
+        console.log(isCollision, newHeadCoord);
+        if (isCollision) {
+            return;
+        }
         snake.move(newHeadCoord, direction);
         setSnake(snake);
         return setSnakeToBoard(snake.toArray());
@@ -67,26 +87,7 @@ function Board() {
         setSnake(snake);
         setSnakeToBoard(snake.toArray());
     }
-
-    const handleKeydown = e => {
-        const key = e.key;
-        switch (key) {
-            case 'ArrowUp':
-                setDirection(SNAKE_DIRECTION.UP);
-                break;
-            case 'ArrowRight':
-                setDirection(SNAKE_DIRECTION.RIGHT);
-                break;
-            case 'ArrowDown':
-                setDirection(SNAKE_DIRECTION.DOWN);
-                break;
-            case 'ArrowLeft':
-                setDirection(SNAKE_DIRECTION.LEFT);
-                break;
-            default:
-                break;
-        }
-    }
+    
 
     function getDirection(currentPosition, direction) {
         let [row, col] = currentPosition.split('-');
@@ -107,6 +108,17 @@ function Board() {
                 break;
         }
         return `${row}-${col}`;
+    }
+
+    function checkBoardCollision(coord) {
+        let [row, col] = coord.split('-');
+        row = Number(row);
+        col = Number(col);
+        return row < 1 || row > BOARD_SIZE || col < 1 || col > BOARD_SIZE;
+    }
+
+    function checkSnakeCollision(snake, coord) {
+        
     }
 
     return (
