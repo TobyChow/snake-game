@@ -14,10 +14,13 @@ class Snake {
         this.head = newNode;
         this.tail = newNode;
         this.size = 1;
+        this.cells = new Set(); // collection of snake cells
+        this.cells.add(val);
     }
     // add node to tail
     grow(val, direction) {
         const newNode = new Node(val, direction);
+        this.cells.add(val);
         newNode.prev = this.tail;
         if (!this.head) {
             this.head = newNode;
@@ -34,7 +37,9 @@ class Snake {
         this.head.prev = newHead;
         newHead.next = this.head;
         this.head = newHead;
+        this.cells.add(val);
         // remove last node
+        this.cells.delete(this.tail.val);
         [this.tail.prev.next, this.tail.prev, this.tail] = [null, this.tail.prev.prev, this.tail.prev];
     }
     toArray() {

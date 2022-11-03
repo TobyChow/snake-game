@@ -31,7 +31,10 @@ function Board() {
     const [direction, setDirection] = useState(SNAKE_DIRECTION.RIGHT);
 
     const [board, setBoard] = useState(() => {
-        return createBoard(snake.toArray(), 'snake');
+        return createBoard({
+            snake: snake.toArray(),
+            apple: ['5-10']
+        });
     });
 
     const gameTick = useRef();
@@ -59,21 +62,26 @@ function Board() {
             }
         }
         
-        window.addEventListener('keydown', handleKeydown);
-        return () => window.removeEventListener('keydown', handleKeydown);
+        document.addEventListener('keydown', handleKeydown);
+        return () => document.removeEventListener('keydown', handleKeydown);
     },[direction]);
 
     function setSnakeToBoard(target) {
-        return setBoard(createBoard(target, 'snake'));
+        return setBoard(createBoard({snake: target}));
     }
 
     function handleMove() {
         const newHeadCoord = getDirection(snake.head.val, direction);
         // check new coord for collision
+        // todo combine collision checker
         const isCollision = checkBoardCollision(newHeadCoord);
-        console.log(isCollision, newHeadCoord);
         if (isCollision) {
-            return;
+            console.log(isCollision, newHeadCoord);
+            return; //todo gameover
+        }
+        if (checkSnakeCollision(newHeadCoord)) {
+            console.log('self');
+            return; //todo gameover
         }
         snake.move(newHeadCoord, direction);
         setSnake(snake);
@@ -83,9 +91,16 @@ function Board() {
     function handleEat() {
         // use opposite direction of tail to determine where to add new tail
         const positionToAddTail = getDirection(snake.tail.val, SNAKE_DIRECTION_OPPOSITE[snake.tail.direction]);
-        snake.grow(positionToAddTail, snake.tail.direction);
-        setSnake(snake);
-        setSnakeToBoard(snake.toArray());
+
+        // prevent extending snake past border
+        if (checkBoardCollision(positionToAddTail)) {
+            console.log('tail exceeds border');
+            return;
+        } else {
+            snake.grow(positionToAddTail, snake.tail.direction);
+            setSnake(snake);
+            setSnakeToBoard(snake.toArray());
+        }
     }
     
 
@@ -117,8 +132,8 @@ function Board() {
         return row < 1 || row > BOARD_SIZE || col < 1 || col > BOARD_SIZE;
     }
 
-    function checkSnakeCollision(snake, coord) {
-        
+    function checkSnakeCollision(coord) {
+        return snake.cells.has(coord);
     }
 
     return (
@@ -139,14 +154,18 @@ function Board() {
  * @param {string} className - html class name to apply
  * @returns 
  */
-function createBoard(target=[], className=null) {
+function createBoard(boardEntities) {
     let board = [];
     for (let i=1; i<=BOARD_SIZE; i++) {
         for (let j=1; j<=BOARD_SIZE; j++) {
             let cellClass = 'cell';
             let cellId = `${i}-${j}`;
-            if (target.includes(cellId)) {
-                cellClass += ' ' + className;
+            // todo
+            for (const [boardEntity, targetCells] of Object.entries(boardEntities)) {
+                if (targetCells.includes(cellId)) {
+                    console.log(boardEntity, targetCells);
+                    cellClass += ' ' + boardEntity;
+                }
             }
             board.push(<div style={{width:CELL_SIZE, height:CELL_SIZE}} id={cellId} className={cellClass} key={`${i}-${j}`} row={i} col={j}>{`${i} ${j}`}</div>);
         }
