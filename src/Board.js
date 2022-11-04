@@ -18,7 +18,7 @@ const SNAKE_DIRECTION_OPPOSITE = {
     'DOWN': 'UP'
 };
 
-const tickRate = 200; // milliseconds, 100 or 150 is good
+const tickRate = 100; // milliseconds, 100 or 150 is good
 
 function Board() {
     const [snake, setSnake] = useState(() => {
@@ -28,7 +28,7 @@ function Board() {
         return snake;
     });
 
-    const [foodCell, setFoodCell] = useState(['5-5']);
+    const [foodCell, setFoodCell] = useState(['6-5']);
 
     const [direction, setDirection] = useState(SNAKE_DIRECTION.RIGHT);
 
@@ -43,11 +43,11 @@ function Board() {
 
     useEffect(() => {
         gameTick.current = setInterval(() => {
-            // handleMove();
+            handleMove();
             console.log('tick');
         }, tickRate)
         return ()=>clearInterval(gameTick.current);
-    },[]);
+    },[snake, direction, foodCell]);
 
     useEffect(() => {
         const handleKeydown = e => {
@@ -68,13 +68,6 @@ function Board() {
         return () => document.removeEventListener('keydown', handleKeydown);
     },[direction]);
 
-    function setSnakeToBoard(target) {
-        return setBoard(createBoard({
-            snake: target,
-            food: foodCell
-        }));
-    }
-
     function handleMove() {
         const newHeadCoord = getDirection(snake.head.val, direction);
         // check new coord for collision
@@ -88,7 +81,8 @@ function Board() {
             console.log('self');
             return; //todo gameover
         }
-        console.log(newHeadCoord);
+
+        let hasConsumedFood = false;
         if (checkFoodCollision(newHeadCoord)) {
             console.log('eat food');
             setFoodCell([]);
@@ -96,12 +90,16 @@ function Board() {
                 snake: snake.toArray(),
                 food: [],
             }));
-            //handleEat();
+            hasConsumedFood = true;
+            handleEat();
         }
 
         snake.move(newHeadCoord, direction);
         setSnake(snake);
-        setSnakeToBoard(snake.toArray());
+        setBoard(createBoard({
+            snake: snake.toArray(),
+            food: hasConsumedFood ? [] : foodCell,
+        }));
     }
 
     function handleEat() {
@@ -115,7 +113,10 @@ function Board() {
         } else {
             snake.grow(positionToAddTail, snake.tail.direction);
             setSnake(snake);
-            setSnakeToBoard(snake.toArray());
+            setBoard(createBoard({
+                snake: snake.toArray(),
+                food: foodCell,
+            }));
         }
     }
     
