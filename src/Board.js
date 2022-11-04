@@ -28,12 +28,14 @@ function Board() {
         return snake;
     });
 
+    const [foodCell, setFoodCell] = useState(['5-5']);
+
     const [direction, setDirection] = useState(SNAKE_DIRECTION.RIGHT);
 
     const [board, setBoard] = useState(() => {
         return createBoard({
             snake: snake.toArray(),
-            apple: ['5-10']
+            food: foodCell
         });
     });
 
@@ -67,7 +69,10 @@ function Board() {
     },[direction]);
 
     function setSnakeToBoard(target) {
-        return setBoard(createBoard({snake: target}));
+        return setBoard(createBoard({
+            snake: target,
+            food: foodCell
+        }));
     }
 
     function handleMove() {
@@ -83,9 +88,20 @@ function Board() {
             console.log('self');
             return; //todo gameover
         }
+        console.log(newHeadCoord);
+        if (checkFoodCollision(newHeadCoord)) {
+            console.log('eat food');
+            setFoodCell([]);
+            setBoard(createBoard({
+                snake: snake.toArray(),
+                food: [],
+            }));
+            //handleEat();
+        }
+
         snake.move(newHeadCoord, direction);
         setSnake(snake);
-        return setSnakeToBoard(snake.toArray());
+        setSnakeToBoard(snake.toArray());
     }
 
     function handleEat() {
@@ -136,6 +152,10 @@ function Board() {
         return snake.cells.has(coord);
     }
 
+    function checkFoodCollision(coord) {
+        return foodCell.includes(coord);
+    }
+
     return (
         <div>
             <button onClick={() => handleMove()}>manual move</button>
@@ -163,7 +183,6 @@ function createBoard(boardEntities) {
             // todo
             for (const [boardEntity, targetCells] of Object.entries(boardEntities)) {
                 if (targetCells.includes(cellId)) {
-                    console.log(boardEntity, targetCells);
                     cellClass += ' ' + boardEntity;
                 }
             }
