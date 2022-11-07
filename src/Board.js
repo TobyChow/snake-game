@@ -43,7 +43,7 @@ function Board() {
 
     useEffect(() => {
         gameTick.current = setInterval(() => {
-            handleMove();
+            //handleMove();
             console.log('tick');
         }, tickRate)
         return ()=>clearInterval(gameTick.current);
@@ -155,6 +155,11 @@ function Board() {
 
     function checkFoodCollision(coord) {
         return foodCell.includes(coord);
+    }
+
+    //todo randomly spawn food
+    function spawnFood() {
+        
     }
 
     return (
