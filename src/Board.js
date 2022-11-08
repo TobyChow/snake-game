@@ -85,13 +85,9 @@ function Board() {
         let hasConsumedFood = false;
         if (checkFoodCollision(newHeadCoord)) {
             console.log('eat food');
-            setFoodCell([]);
-            setBoard(createBoard({
-                snake: snake.toArray(),
-                food: [],
-            }));
             hasConsumedFood = true;
             handleEat();
+            spawnFood();
         }
 
         snake.move(newHeadCoord, direction);
@@ -107,16 +103,13 @@ function Board() {
         const positionToAddTail = getDirection(snake.tail.val, SNAKE_DIRECTION_OPPOSITE[snake.tail.direction]);
 
         // prevent extending snake past border
+        // todo edge case
         if (checkBoardCollision(positionToAddTail)) {
             console.log('tail exceeds border');
             return;
         } else {
             snake.grow(positionToAddTail, snake.tail.direction);
             setSnake(snake);
-            setBoard(createBoard({
-                snake: snake.toArray(),
-                food: foodCell,
-            }));
         }
     }
     
@@ -159,13 +152,18 @@ function Board() {
 
     //todo randomly spawn food
     function spawnFood() {
-        
+        let randomCell = getRandomCell();
+        while (snake.cells.has(randomCell)) {
+            randomCell = getRandomCell();
+        }
+        setFoodCell([randomCell]);
     }
 
     return (
         <div>
             <button onClick={() => handleMove()}>manual move</button>
             <button onClick={() => handleEat()}>eat</button>
+            <button onClick={() => spawnFood()}>food</button>
             {direction}
             <div id="board" style={{width:BOARD_WIDTH}}>
                 {board}
@@ -186,7 +184,6 @@ function createBoard(boardEntities) {
         for (let j=1; j<=BOARD_SIZE; j++) {
             let cellClass = 'cell';
             let cellId = `${i}-${j}`;
-            // todo
             for (const [boardEntity, targetCells] of Object.entries(boardEntities)) {
                 if (targetCells.includes(cellId)) {
                     cellClass += ' ' + boardEntity;
@@ -197,5 +194,17 @@ function createBoard(boardEntities) {
     }
     return board;
 }
+
+//todo comment
+function getRandomCell() {
+    function getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
+    }
+
+    return `${getRandomInt(1, BOARD_SIZE)}-${getRandomInt(1, BOARD_SIZE)}`;
+}
+
 
 export default Board;
