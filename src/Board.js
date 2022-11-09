@@ -35,6 +35,7 @@ function Board() {
     const [board, setBoard] = useState(() => {
         return createBoard({
             snake: snake.toArray(),
+            snake__head: [snake.head.val],
             food: foodCell
         });
     });
@@ -43,7 +44,7 @@ function Board() {
 
     useEffect(() => {
         gameTick.current = setInterval(() => {
-            //handleMove();
+            handleMove();
             console.log('tick');
         }, tickRate)
         return ()=>clearInterval(gameTick.current);
@@ -94,6 +95,7 @@ function Board() {
         setSnake(snake);
         setBoard(createBoard({
             snake: snake.toArray(),
+            snake__head: [snake.head.val],
             food: hasConsumedFood ? [] : foodCell,
         }));
     }
@@ -159,6 +161,34 @@ function Board() {
         setFoodCell([randomCell]);
     }
 
+    /**
+     * 
+     * @param {string[]} target - cell coordinates to apply className to
+     * @param {string} className - html class name to apply
+     * @returns 
+     */
+    function createBoard(boardEntities) {
+        let board = [];
+        for (let i=1; i<=BOARD_SIZE; i++) {
+            for (let j=1; j<=BOARD_SIZE; j++) {
+                let cellClass = 'cell';
+                let cellId = `${i}-${j}`;
+                for (const [boardEntity, targetCells] of Object.entries(boardEntities)) {
+                    if (targetCells.includes(cellId)) {
+                        if (boardEntity === 'snake__head') {
+                            cellClass += ' ' + `snake__head--${direction}`;
+                        }
+
+                        cellClass += ' ' + boardEntity;
+                    }
+                    
+                }
+                board.push(<div style={{width:CELL_SIZE, height:CELL_SIZE}} id={cellId} className={cellClass} key={`${i}-${j}`} row={i} col={j}>{`${i} ${j}`}</div>);
+            }
+        }
+        return board;
+    }
+
     return (
         <div>
             <button onClick={() => handleMove()}>manual move</button>
@@ -172,28 +202,7 @@ function Board() {
     );
 }
 
-/**
- * 
- * @param {string[]} target - cell coordinates to apply className to
- * @param {string} className - html class name to apply
- * @returns 
- */
-function createBoard(boardEntities) {
-    let board = [];
-    for (let i=1; i<=BOARD_SIZE; i++) {
-        for (let j=1; j<=BOARD_SIZE; j++) {
-            let cellClass = 'cell';
-            let cellId = `${i}-${j}`;
-            for (const [boardEntity, targetCells] of Object.entries(boardEntities)) {
-                if (targetCells.includes(cellId)) {
-                    cellClass += ' ' + boardEntity;
-                }
-            }
-            board.push(<div style={{width:CELL_SIZE, height:CELL_SIZE}} id={cellId} className={cellClass} key={`${i}-${j}`} row={i} col={j}>{`${i} ${j}`}</div>);
-        }
-    }
-    return board;
-}
+
 
 //todo comment
 function getRandomCell() {

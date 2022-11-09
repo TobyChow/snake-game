@@ -2,10 +2,40 @@
     display:inline-block;
     outline:1px solid red;
 }
-
 .snake {
     background:red;
 }
 .food {
     background:green;
+}
+.snake__head {
+    position:relative;
+    clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 100% 100%, 0 100%, 0% 70%, 0% 30%);
+}
+.snake__head::before{
+    content:'';
+    background:black;
+    width:5px;
+    height:5px;
+    position:absolute;
+    top:10px;
+    left:25%;
+}
+.snake__head::after{
+    content:'';
+    background:black;
+    width:5px;
+    height:5px;
+    position:absolute;
+    top:10px;
+    left:65%;
+}
+.snake__head--RIGHT {
+    transform: rotate(90deg);
+}
+.snake__head--DOWN {
+    transform: rotate(180deg);
+}
+.snake__head--LEFT {
+    transform: rotate(270deg);
 }

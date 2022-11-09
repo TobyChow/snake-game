@@ -1,70 +1,69 @@
-# Getting Started with Create React App
+# About
+Recreate the classic snake game.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Use arrow keys to control the snake's direction.
 
-## Available Scripts
+Gain score by eating food.
 
-In the project directory, you can run:
+Game over when snake collides with itself, or the edge of the board.
 
-### `npm start`
+# Motivation
+To practice React, data structures (doubly linked list), and Big O analysis.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+# Project Overview
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Board
+The board is a grid represented by coordinates in the form "\<row>-\<column>". For example, the most top left cell has a coordinate of "1-1".
 
-### `npm test`
+## Snake
+The snake uses a doubly linked list (DLL) structure.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+The head of the DLL represents the head of the snake. Each node of the DLL represents a section of the snake, and contains the coordinate it should be placed at in the board.
 
-### `npm run build`
+### Moving
+To move the snake, a new node is added to the head, and the tail node is removed.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Eating
+When the snake consumes food, a new node is added to the tail of the DLL.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Storing coordinates of snake cells
+A Set is used to store coordinates of the snake's cells.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+When searching for a specific value, set is preferred over an array to achieve O(1). This is used in checking for collision with itself.
 
-### `npm run eject`
+### Why use a DLL instead of an array or a single linked list?
+This is to optimize moving the snake.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Moving the snake involves adding the head of the snake and removal of the tail.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+#### Addition of head
+In a linked list, addition is O(1), because there is always a reference to the head.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+In an array, addition of the first element (arr[0]) is O(n), because the index of each following element in the array is shifted.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+#### Removal of tail
+In a linked list, removal is O(1) only if there is a tail reference.
 
-## Learn More
+In a single linked list, the tail reference is lost after removal. Finding the new tail is O(n).
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+In a DLL, finding the new tail is O(1), since there is a reference to the previous node.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+|  | Array | Single linked list | DLL
+| :---: | :---: | :---: | :---: |
+| Add Head | O(n) | O(1) | O(1)
+| Remove Tail | O(1) | O(n) | O(1)
 
-### Code Splitting
+# Analyzing Time Complexity
+| Event | Time Complexity | Space Complexity |
+| :---: | :---: | :---: |
+| Move | O(1) | O(1) |
+| Eat | O(1) | O(1) |
+| Collision with board | O(1) | O(1) |
+| Collision with itself | O(n) | O(1) |
+| Render | O(n) | --- |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+# Install
+```
+> npm i
+> npm start
+```
