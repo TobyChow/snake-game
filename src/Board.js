@@ -34,7 +34,7 @@ function Board() {
 
     const [board, setBoard] = useState(() => {
         return createBoard({
-            snake: snake.toArray(),
+            snake: snake.cells,
             snake__head: [snake.head.val],
             food: foodCell
         });
@@ -44,8 +44,7 @@ function Board() {
 
     useEffect(() => {
         gameTick.current = setInterval(() => {
-            handleMove();
-            console.log('tick');
+            //handleMove();
         }, tickRate)
         return ()=>clearInterval(gameTick.current);
     },[snake, direction, foodCell]);
@@ -53,7 +52,6 @@ function Board() {
     useEffect(() => {
         const handleKeydown = e => {
             const key = e.key;
-            console.log(key, direction);
             if (key === 'ArrowLeft' && direction !== 'RIGHT') {
                 setDirection(SNAKE_DIRECTION.LEFT);
             } else if (key === 'ArrowRight' && direction !== 'LEFT') {
@@ -75,7 +73,6 @@ function Board() {
         // todo combine collision checker
         const isCollision = checkBoardCollision(newHeadCoord);
         if (isCollision) {
-            console.log(isCollision, newHeadCoord);
             return; //todo gameover
         }
         if (checkSnakeCollision(newHeadCoord)) {
@@ -94,7 +91,7 @@ function Board() {
         snake.move(newHeadCoord, direction);
         setSnake(snake);
         setBoard(createBoard({
-            snake: snake.toArray(),
+            snake: snake.cells,
             snake__head: [snake.head.val],
             food: hasConsumedFood ? [] : foodCell,
         }));
@@ -107,7 +104,6 @@ function Board() {
         // prevent extending snake past border
         // todo edge case
         if (checkBoardCollision(positionToAddTail)) {
-            console.log('tail exceeds border');
             return;
         } else {
             snake.grow(positionToAddTail, snake.tail.direction);
@@ -168,20 +164,15 @@ function Board() {
      * @returns 
      */
     function createBoard(boardEntities) {
+        const hash = entitiesToCoords(boardEntities, direction);
+        console.log(hash);
         let board = [];
         for (let i=1; i<=BOARD_SIZE; i++) {
             for (let j=1; j<=BOARD_SIZE; j++) {
                 let cellClass = 'cell';
                 let cellId = `${i}-${j}`;
-                for (const [boardEntity, targetCells] of Object.entries(boardEntities)) {
-                    if (targetCells.includes(cellId)) {
-                        if (boardEntity === 'snake__head') {
-                            cellClass += ' ' + `snake__head--${direction}`;
-                        }
-
-                        cellClass += ' ' + boardEntity;
-                    }
-                    
+                if (hash[cellId]) {
+                    cellClass += ' ' + hash[cellId];
                 }
                 board.push(<div style={{width:CELL_SIZE, height:CELL_SIZE}} id={cellId} className={cellClass} key={`${i}-${j}`} row={i} col={j}>{`${i} ${j}`}</div>);
             }
@@ -200,6 +191,26 @@ function Board() {
             </div>
         </div>
     );
+}
+
+function entitiesToCoords(boardEntities, direction = '') {
+    const hash = {};
+    for (let [boardEntity, targetCells] of Object.entries(boardEntities)) {
+        targetCells.forEach(targetCell => {
+            if (boardEntity === 'snake__head') {
+                boardEntity += ' snake__head--' + direction;
+            }
+            
+            if (!hash[targetCell]) {
+                hash[targetCell] = ' ' + boardEntity;
+            } else {
+                hash[targetCell] += ' ' + boardEntity;
+            }
+
+            
+        });
+    }
+    return hash;
 }
 
 
