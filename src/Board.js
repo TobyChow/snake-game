@@ -2,7 +2,7 @@ import {useEffect, useState, useRef} from 'react';
 import { useInterval } from './Util.js';
 import Snake from './Snake.js';
 
-const BOARD_SIZE = 10; // number of cells per row / col
+const BOARD_SIZE = 20; // number of cells per row / col
 const CELL_SIZE = 50; //px
 const BOARD_WIDTH = BOARD_SIZE * CELL_SIZE;
 const SNAKE_DIRECTION = {
@@ -18,7 +18,7 @@ const SNAKE_DIRECTION_OPPOSITE = {
     'DOWN': 'UP'
 };
 
-const tickRate = 100; // milliseconds, 100 or 150 is good
+const tickRate = 1000; // milliseconds, 100 or 150 is good
 
 function Board() {
     const [snake, setSnake] = useState(() => {
@@ -27,6 +27,8 @@ function Board() {
         snake.grow('5-1', 'RIGHT');
         return snake;
     });
+
+    const [snakeCells, setSnakeCells] = useState(snake.cells);
 
     const [foodCell, setFoodCell] = useState(['6-5']);
 
@@ -40,14 +42,22 @@ function Board() {
         });
     });
 
-    const gameTick = useRef();
 
+    /*
+    const gameTick = useRef();
     useEffect(() => {
         gameTick.current = setInterval(() => {
-            //handleMove();
+            handleMove();
         }, tickRate)
         return ()=>clearInterval(gameTick.current);
-    },[snake, direction, foodCell]);
+    },[snake, snakeCells, direction, foodCell]);
+    */
+
+    useInterval(() => {
+        handleMove();
+    }, 1000);
+
+    const d = useRef(SNAKE_DIRECTION.RIGHT);
 
     useEffect(() => {
         const handleKeydown = e => {
@@ -64,15 +74,17 @@ function Board() {
         }
         
         document.addEventListener('keydown', handleKeydown);
-        return () => document.removeEventListener('keydown', handleKeydown);
     },[direction]);
 
     function handleMove() {
+        d.current = direction;
+
         const newHeadCoord = getDirection(snake.head.val, direction);
         // check new coord for collision
         // todo combine collision checker
         const isCollision = checkBoardCollision(newHeadCoord);
         if (isCollision) {
+            console.log('board');
             return; //todo gameover
         }
         if (checkSnakeCollision(newHeadCoord)) {
@@ -90,11 +102,14 @@ function Board() {
 
         snake.move(newHeadCoord, direction);
         setSnake(snake);
+        setSnakeCells(new Set(snake.cells));
+        /*
         setBoard(createBoard({
             snake: snake.cells,
             snake__head: [snake.head.val],
             food: hasConsumedFood ? [] : foodCell,
         }));
+        */
     }
 
     function handleEat() {
@@ -148,7 +163,7 @@ function Board() {
         return foodCell.includes(coord);
     }
 
-    //todo randomly spawn food
+    
     function spawnFood() {
         let randomCell = getRandomCell();
         while (snake.cells.has(randomCell)) {
@@ -164,21 +179,21 @@ function Board() {
      * @returns 
      */
     function createBoard(boardEntities) {
-        const hash = entitiesToCoords(boardEntities, direction);
-        console.log(hash);
         let board = [];
         for (let i=1; i<=BOARD_SIZE; i++) {
             for (let j=1; j<=BOARD_SIZE; j++) {
-                let cellClass = 'cell';
                 let cellId = `${i}-${j}`;
-                if (hash[cellId]) {
-                    cellClass += ' ' + hash[cellId];
-                }
-                board.push(<div style={{width:CELL_SIZE, height:CELL_SIZE}} id={cellId} className={cellClass} key={`${i}-${j}`} row={i} col={j}>{`${i} ${j}`}</div>);
+                board.push(cellId);
             }
         }
         return board;
     }
+
+    const entities = entitiesToCoords({
+        snake: snakeCells,
+        snake__head: [snake.head.val],
+        food: [foodCell]
+    }, d.current);
 
     return (
         <div>
@@ -187,7 +202,13 @@ function Board() {
             <button onClick={() => spawnFood()}>food</button>
             {direction}
             <div id="board" style={{width:BOARD_WIDTH}}>
-                {board}
+                {board.map(cell => {
+                    let className = 'cell';
+                    if (entities[cell]) {
+                        className += ' ' + entities[cell];
+                    }
+                    return <div key={cell} className={className}>{cell}</div>;
+                })}
             </div>
         </div>
     );
@@ -206,8 +227,6 @@ function entitiesToCoords(boardEntities, direction = '') {
             } else {
                 hash[targetCell] += ' ' + boardEntity;
             }
-
-            
         });
     }
     return hash;
