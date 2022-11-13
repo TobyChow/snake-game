@@ -18,22 +18,31 @@ const SNAKE_DIRECTION_OPPOSITE = {
     'DOWN': 'UP'
 };
 
-const tickRate = 1000; // milliseconds, 100 or 150 is good
+const tickRate = 100; // milliseconds, 100 or 150 is good
+
+const initialSnake = (() => {
+    const snake = new Snake('5-3', 'RIGHT');
+    snake.grow('5-2', 'RIGHT');
+    snake.grow('5-1', 'RIGHT');
+    return snake;
+})();
+
+const initialState = {
+    snake: initialSnake,
+    snakeCells: initialSnake.cells,
+    foodCell: ['6-5'],
+    direction: SNAKE_DIRECTION.RIGHT,
+};
 
 function Board() {
-    const [snake, setSnake] = useState(() => {
-        const snake = new Snake('5-3', 'RIGHT');
-        snake.grow('5-2', 'RIGHT');
-        snake.grow('5-1', 'RIGHT');
-        return snake;
-    });
+    console.log('render board');
+    const [score, setScore] = useState(0);
+    const [snake, setSnake] = useState(initialState.snake);
+    const [snakeCells, setSnakeCells] = useState(initialState.snakeCells);
+    const [foodCell, setFoodCell] = useState(initialState.foodCell);
+    const [direction, setDirection] = useState(initialState.direction);
 
-    const [snakeCells, setSnakeCells] = useState(snake.cells);
-
-    const [foodCell, setFoodCell] = useState(['6-5']);
-
-    const [direction, setDirection] = useState(SNAKE_DIRECTION.RIGHT);
-
+    /*
     const [board, setBoard] = useState(() => {
         return createBoard({
             snake: snake.cells,
@@ -41,6 +50,8 @@ function Board() {
             food: foodCell
         });
     });
+    */
+   const board = createBoard();
 
 
     /*
@@ -53,15 +64,12 @@ function Board() {
     },[snake, snakeCells, direction, foodCell]);
     */
 
-    useInterval(() => {
-        handleMove();
-    }, 1000);
-
-    const d = useRef(SNAKE_DIRECTION.RIGHT);
+    
 
     useEffect(() => {
         const handleKeydown = e => {
             const key = e.key;
+            console.log(direction);
             if (key === 'ArrowLeft' && direction !== 'RIGHT') {
                 setDirection(SNAKE_DIRECTION.LEFT);
             } else if (key === 'ArrowRight' && direction !== 'LEFT') {
@@ -74,7 +82,14 @@ function Board() {
         }
         
         document.addEventListener('keydown', handleKeydown);
+        return () => document.removeEventListener('keydown', handleKeydown);
     },[direction]);
+
+    useInterval(() => {
+        //handleMove();
+    }, tickRate);
+
+    const d = useRef(SNAKE_DIRECTION.RIGHT);
 
     function handleMove() {
         d.current = direction;
@@ -97,7 +112,6 @@ function Board() {
             console.log('eat food');
             hasConsumedFood = true;
             handleEat();
-            spawnFood();
         }
 
         snake.move(newHeadCoord, direction);
@@ -121,8 +135,19 @@ function Board() {
         if (checkBoardCollision(positionToAddTail)) {
             return;
         } else {
+            function spawnFood() {
+                let randomCell = getRandomCell();
+                while (snake.cells.has(randomCell)) {
+                    randomCell = getRandomCell();
+                }
+                setFoodCell([randomCell]);
+            }
+            spawnFood();
+
             snake.grow(positionToAddTail, snake.tail.direction);
             setSnake(snake);
+
+            setScore(score + 1);
         }
     }
     
@@ -163,14 +188,16 @@ function Board() {
         return foodCell.includes(coord);
     }
 
-    
-    function spawnFood() {
-        let randomCell = getRandomCell();
-        while (snake.cells.has(randomCell)) {
-            randomCell = getRandomCell();
-        }
-        setFoodCell([randomCell]);
+    function gameOver() {
+        console.log(initialState);
+
+        setScore(0);
+        setSnake(initialState.snake);
+        setSnakeCells(initialState.snakeCells);
+        setFoodCell(initialState.foodCell);
+        setDirection(initialState.direction);
     }
+
 
     /**
      * 
@@ -197,10 +224,11 @@ function Board() {
 
     return (
         <div>
+            <button onClick={() => gameOver()}>gameover</button>
             <button onClick={() => handleMove()}>manual move</button>
             <button onClick={() => handleEat()}>eat</button>
-            <button onClick={() => spawnFood()}>food</button>
             {direction}
+            {score}
             <div id="board" style={{width:BOARD_WIDTH}}>
                 {board.map(cell => {
                     let className = 'cell';
