@@ -66,8 +66,10 @@ function Board() {
     },[direction]);
 
     useInterval(() => {
-        handleMove();
+        // handleMove();
     }, tickRate);
+
+    'a'
 
 
     const d = useRef(SNAKE_DIRECTION.RIGHT);
