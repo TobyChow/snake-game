@@ -10,18 +10,28 @@ const style = {
     height:'100%',
 }
 
+const TICK_RATE = {
+    'easy': 1000,
+    'medium': 150,
+    'hard': 1,
+}
+
 const StartScreen = memo(function StartScreen({ handleStart, setTickRate }) {
     console.log('render start');
     const [showCountdown, setShowCountdown] = useState(false);
 
-    function handleDifficultySelect() {
-        setTickRate(150);
+    function handleDifficultySelect(tickRate) {
+        setTickRate(tickRate);
         setShowCountdown(true);
     }
 
     function SelectDifficulty() {
         return (
-            <button onClick={handleDifficultySelect}>a</button>
+        <>
+            <button onClick={() => handleDifficultySelect(TICK_RATE['easy'])}>Easy</button>
+            <button onClick={() => handleDifficultySelect(TICK_RATE['medium'])}>Medium</button>
+            <button onClick={() => handleDifficultySelect(TICK_RATE['hard'])}>Hard</button>
+        </>
         );
     }
 

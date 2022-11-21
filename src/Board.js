@@ -204,8 +204,9 @@ function Board({ isGameStart, startGame, setTickRate}) {
             {direction}
             {score}
 
-            {!isGameStart && <StartScreen handleStart={startGame} setTickRate={setTickRate}/>}
             <div id="board" style={{width:BOARD_WIDTH}}>
+                {!isGameStart && <StartScreen handleStart={startGame} setTickRate={setTickRate}/>}
+
                 {board.map(cell => {
                     let className = 'cell';
                     if (entities[cell]) {
