@@ -19,9 +19,8 @@ const SNAKE_DIRECTION_OPPOSITE = {
     'DOWN': 'UP'
 };
 
-const tickRate = 100; // milliseconds, 100 or 150 is good
 
-const initialSnake = (initialCells = ['5-3', '5-2', '5-1'], initialDirection = SNAKE_DIRECTION.RIGHT) => {
+const initialSnake = (initialCells = ['10-4', '10-3', '10-2'], initialDirection = SNAKE_DIRECTION.RIGHT) => {
     const [head, ...cells] = initialCells;
     console.log(head);
     const snake = new Snake(head, initialDirection);
@@ -31,12 +30,12 @@ const initialSnake = (initialCells = ['5-3', '5-2', '5-1'], initialDirection = S
 
 const initialState = {
     snake: initialSnake,
-    snakeCells: ['5-3', '5-2', '5-1'],
-    foodCell: ['6-5'],
+    snakeCells: ['10-4', '10-3', '10-2'],
+    foodCell: ['8-7'],
     direction: SNAKE_DIRECTION.RIGHT,
 };
 
-function Board({ isGameStart, startGame, setTickRate}) {
+function Board({ isGameStart, startGame, tickRate, setTickRate}) {
     console.log('render board');
     const [score, setScore] = useState(0);
     const [snake, setSnake] = useState(initialState.snake);
@@ -44,8 +43,7 @@ function Board({ isGameStart, startGame, setTickRate}) {
     const [foodCell, setFoodCell] = useState(initialState.foodCell);
     const [direction, setDirection] = useState(initialState.direction);
 
-
-   const board = createBoard();
+    const board = createBoard();
 
     useEffect(() => {
         const handleKeydown = e => {
@@ -107,7 +105,7 @@ function Board({ isGameStart, startGame, setTickRate}) {
         if (checkBoardCollision(positionToAddTail)) {
             return;
         } else {
-            function spawnFood() { //todo sometimes spawns on body
+            function spawnFood() {
                 let randomCell = getRandomCell();
                 while (snake.cells.has(randomCell)) {
                     randomCell = getRandomCell();
@@ -212,7 +210,7 @@ function Board({ isGameStart, startGame, setTickRate}) {
                     if (entities[cell]) {
                         className += ' ' + entities[cell];
                     }
-                    return <div key={cell} className={className}></div>;
+                    return <div key={cell} className={className}>{cell}</div>;
                 })}
             </div>
         </div>
