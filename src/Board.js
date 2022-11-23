@@ -35,6 +35,8 @@ const initialState = {
     direction: SNAKE_DIRECTION.RIGHT,
 };
 
+const board = createBoard();
+
 function Board({ isGameStart, startGame, tickRate, setTickRate}) {
     console.log('render board');
     const [score, setScore] = useState(0);
@@ -43,7 +45,6 @@ function Board({ isGameStart, startGame, tickRate, setTickRate}) {
     const [foodCell, setFoodCell] = useState(initialState.foodCell);
     const [direction, setDirection] = useState(initialState.direction);
 
-    const board = createBoard();
 
     useEffect(() => {
         const handleKeydown = e => {
@@ -171,22 +172,7 @@ function Board({ isGameStart, startGame, tickRate, setTickRate}) {
     }
 
 
-    /**
-     * 
-     * @param {string[]} target - cell coordinates to apply className to
-     * @param {string} className - html class name to apply
-     * @returns 
-     */
-    function createBoard(boardEntities) {
-        let board = [];
-        for (let i=1; i<=BOARD_SIZE; i++) {
-            for (let j=1; j<=BOARD_SIZE; j++) {
-                let cellId = `${i}-${j}`;
-                board.push(cellId);
-            }
-        }
-        return board;
-    }
+
 
     const entities = entitiesToCoords({
         snake: snakeCells,
@@ -235,7 +221,22 @@ function entitiesToCoords(boardEntities, direction = '') {
     return hash;
 }
 
-
+/**
+ * 
+ * @param {string[]} target - cell coordinates to apply className to
+ * @param {string} className - html class name to apply
+ * @returns 
+ */
+    function createBoard() {
+    let board = [];
+    for (let i=1; i<=BOARD_SIZE; i++) {
+        for (let j=1; j<=BOARD_SIZE; j++) {
+            let cellId = `${i}-${j}`;
+            board.push(cellId);
+        }
+    }
+    return board;
+}
 
 //todo comment
 function getRandomCell() {
