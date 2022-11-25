@@ -31,9 +31,10 @@ function Button({ text, handleOnClick, cssOptions }) {
     );
 }
 
-export default function SelectDifficulty({ handleDifficultySelect }) {
+export default function SelectDifficulty({ score, handleDifficultySelect }) {
     return (
     <div>
+        <h1 style={{textAlign:'center'}}>Score: {score}</h1>
         <h1 style={{textAlign:'center'}}>Select Difficulty</h1>
         <div style={buttonContainerStyle}>
             <Button 

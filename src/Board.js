@@ -37,9 +37,8 @@ const initialState = {
 
 const board = createBoard();
 
-function Board({ isGameStart, startGame, tickRate, setTickRate}) {
+function Board({ isGameStart, startGame, tickRate, setTickRate, endGame, score, setScore}) {
     console.log('render board');
-    const [score, setScore] = useState(0);
     const [snake, setSnake] = useState(initialState.snake);
     const [snakeCells, setSnakeCells] = useState(initialState.snakeCells);
     const [foodCell, setFoodCell] = useState(initialState.foodCell);
@@ -81,11 +80,13 @@ function Board({ isGameStart, startGame, tickRate, setTickRate}) {
         const isCollision = checkBoardCollision(newHeadCoord);
         if (isCollision) {
             console.log('board');
-            return; //todo gameover
+            endGame();
+            return;
         }
         if (checkSnakeCollision(newHeadCoord)) {
             console.log('self');
-            return; //todo gameover
+            endGame();
+            return;
         }
 
         if (checkFoodCollision(newHeadCoord)) {
@@ -118,7 +119,7 @@ function Board({ isGameStart, startGame, tickRate, setTickRate}) {
             snake.grow(positionToAddTail, snake.tail.direction);
             setSnake(snake);
 
-            setScore(score + 1);
+            setScore(s=>++s);
         }
     }
     
@@ -185,11 +186,11 @@ function Board({ isGameStart, startGame, tickRate, setTickRate}) {
             <button onClick={() => gameOver()}>gameover</button>
             <button onClick={() => handleMove()}>manual move</button>
             <button onClick={() => handleEat()}>eat</button>
+            <button onClick={() => endGame()}>end</button>
             {direction}
-            {score}
 
             <div id="board" style={{width:BOARD_WIDTH}}>
-                {!isGameStart && <StartScreen handleStart={startGame} setTickRate={setTickRate}/>}
+                {!isGameStart && <StartScreen handleStart={startGame} setTickRate={setTickRate} score={score}/>}
 
                 {board.map(cell => {
                     let className = 'cell';

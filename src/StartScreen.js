@@ -18,7 +18,7 @@ const style = {
 
 
 
-const StartScreen = memo(function StartScreen({ handleStart, setTickRate }) {
+const StartScreen = memo(function StartScreen({ handleStart, setTickRate, score }) {
     console.log('render start');
     const [showCountdown, setShowCountdown] = useState(false);
 
@@ -30,7 +30,7 @@ const StartScreen = memo(function StartScreen({ handleStart, setTickRate }) {
     return (
         <>
         <div style={style}>
-            {showCountdown ? <Countdown callback={(handleStart)}/> : <SelectDifficulty handleDifficultySelect={handleDifficultySelect}/>}
+            {showCountdown ? <Countdown callback={(handleStart)}/> : <SelectDifficulty handleDifficultySelect={handleDifficultySelect} score={score}/>}
         </div>
         </>
     );
