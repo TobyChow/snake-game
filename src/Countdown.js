@@ -19,7 +19,7 @@ export default function Countdown({ callback }) {
 
     return (
         <>
-        {countdown === 0 ? null : <div>{countdown}</div>}
+        {countdown === 0 ? null : <div style={{fontSize:'10rem'}}>{countdown}</div>}
         </>
     );
 }
