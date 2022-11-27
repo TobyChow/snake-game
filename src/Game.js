@@ -4,7 +4,7 @@ import {useState, useCallback} from 'react';
 export default function Game() {
     const [score, setScore] = useState(0);
     const [tickRate, setTickRate] = useState(150);
-    const [isGameStart, setIsGameStart] = useState(false);
+    const [isGameStart, setIsGameStart] = useState(true);//todo set false
     const [gameId, setGameId] = useState(Math.random());
 
     const startGame = useCallback(() => {

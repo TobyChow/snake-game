@@ -48,7 +48,6 @@ function Board({ isGameStart, startGame, tickRate, setTickRate, endGame, score, 
     useEffect(() => {
         const handleKeydown = e => {
             const key = e.key;
-            console.log(direction);
             if (key === 'ArrowLeft' && direction !== 'RIGHT') {
                 setDirection(SNAKE_DIRECTION.LEFT);
             } else if (key === 'ArrowRight' && direction !== 'LEFT') {
