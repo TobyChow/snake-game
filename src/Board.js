@@ -48,20 +48,19 @@ function Board({ isGameStart, startGame, tickRate, setTickRate, endGame, score, 
     useEffect(() => {
         const handleKeydown = e => {
             const key = e.key;
-            if (key === 'ArrowLeft' && direction !== 'RIGHT') {
+            if (key === 'ArrowLeft') {
                 setDirection(SNAKE_DIRECTION.LEFT);
-            } else if (key === 'ArrowRight' && direction !== 'LEFT') {
+            } else if (key === 'ArrowRight') {
                 setDirection(SNAKE_DIRECTION.RIGHT);
-            } else if (key === 'ArrowUp' && direction !== 'DOWN') {
+            } else if (key === 'ArrowUp') {
                 setDirection(SNAKE_DIRECTION.UP);
-            } else if (key === 'ArrowDown' && direction !== 'UP') {
+            } else if (key === 'ArrowDown') {
                 setDirection(SNAKE_DIRECTION.DOWN);
             }
         }
         
         document.addEventListener('keydown', handleKeydown);
-        return () => document.removeEventListener('keydown', handleKeydown);
-    },[direction]);
+    },[]);
 
     useInterval(() => {
         if (isGameStart) handleMove();
@@ -70,10 +69,24 @@ function Board({ isGameStart, startGame, tickRate, setTickRate, endGame, score, 
 
     const tickDirection = useRef(SNAKE_DIRECTION.RIGHT);
 
-    function handleMove() {
-        tickDirection.current = direction;
+    function getValidDirection(tickDirection, selectedDirection) {
+        if (selectedDirection === 'LEFT' && tickDirection !== 'RIGHT') {
+            return 'LEFT';
+        } else if (selectedDirection === 'RIGHT' && tickDirection !== 'LEFT') {
+            return 'RIGHT';
+        } else if (selectedDirection === 'UP' && tickDirection !== 'DOWN') {
+            return 'UP';
+        } else if (selectedDirection === 'DOWN' && tickDirection !== 'UP') {
+            return 'DOWN';
+        } else {
+            return tickDirection;
+        }
+    }
 
-        const newHeadCoord = getDirection(snake.head.val, direction);
+    function handleMove() {
+        tickDirection.current = getValidDirection(tickDirection.current, direction);
+
+        const newHeadCoord = getDirection(snake.head.val, tickDirection.current);
         // check new coord for collision
         // todo combine collision checker
         const isCollision = checkBoardCollision(newHeadCoord);
@@ -93,7 +106,7 @@ function Board({ isGameStart, startGame, tickRate, setTickRate, endGame, score, 
             handleEat();
         }
 
-        snake.move(newHeadCoord, direction);
+        snake.move(newHeadCoord, tickDirection.current);
         setSnake(snake);
         setSnakeCells(new Set(snake.cells));
     }
