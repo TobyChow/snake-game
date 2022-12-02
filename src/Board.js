@@ -3,8 +3,8 @@ import { useInterval } from './Util.js';
 import Snake from './Snake.js';
 import StartScreen from './StartScreen.js';
 
-const BOARD_SIZE = 20; // number of cells per row / col
-const CELL_SIZE = 50; //px
+const BOARD_SIZE = 15; // number of cells per row / col
+const CELL_SIZE = 40; //px
 const BOARD_WIDTH = BOARD_SIZE * CELL_SIZE;
 const SNAKE_DIRECTION = {
     'LEFT': 'LEFT',
@@ -20,9 +20,8 @@ const SNAKE_DIRECTION_OPPOSITE = {
 };
 
 
-const initialSnake = (initialCells = ['10-4', '10-3', '10-2'], initialDirection = SNAKE_DIRECTION.RIGHT) => {
+const initialSnake = (initialCells = [ '3-3', '3-2', '3-1'], initialDirection = SNAKE_DIRECTION.RIGHT) => {
     const [head, ...cells] = initialCells;
-    console.log(head);
     const snake = new Snake(head, initialDirection);
     cells.forEach((cell) => snake.grow(cell, initialDirection));
     return snake;
@@ -30,8 +29,8 @@ const initialSnake = (initialCells = ['10-4', '10-3', '10-2'], initialDirection 
 
 const initialState = {
     snake: initialSnake,
-    snakeCells: ['10-4', '10-3', '10-2'],
-    foodCell: ['8-7'],
+    snakeCells: [ '3-3', '3-2', '3-1'],
+    foodCell: ['4-1'],
     direction: SNAKE_DIRECTION.RIGHT,
 };
 
@@ -103,7 +102,27 @@ function Board({ isGameStart, startGame, tickRate, setTickRate, endGame, score, 
 
         if (checkFoodCollision(newHeadCoord)) {
             console.log('eat food');
-            handleEat();
+            (function handleEat() {
+                // use opposite direction of tail to determine where to add new tail
+                const positionToAddTail = getDirection(snake.tail.val, SNAKE_DIRECTION_OPPOSITE[snake.tail.direction]);
+        
+                // prevent extending snake past border
+                if (!checkBoardCollision(positionToAddTail)) {
+                    snake.grow(positionToAddTail, snake.tail.direction);
+                    setSnake(snake);
+                } 
+        
+                function spawnFood() {
+                    let randomCell = getRandomCell();
+                    while (snake.cells.has(randomCell) && randomCell === newHeadCoord) {
+                        randomCell = getRandomCell();
+                    }
+                    setFoodCell([randomCell]);
+                }
+                spawnFood();
+        
+                setScore(s=>++s);
+            })();
         }
 
         snake.move(newHeadCoord, tickDirection.current);
@@ -111,29 +130,7 @@ function Board({ isGameStart, startGame, tickRate, setTickRate, endGame, score, 
         setSnakeCells(new Set(snake.cells));
     }
 
-    function handleEat() {
-        // use opposite direction of tail to determine where to add new tail
-        const positionToAddTail = getDirection(snake.tail.val, SNAKE_DIRECTION_OPPOSITE[snake.tail.direction]);
-
-        // prevent extending snake past border
-        if (checkBoardCollision(positionToAddTail)) {
-            return;
-        } else {
-            function spawnFood() {
-                let randomCell = getRandomCell();
-                while (snake.cells.has(randomCell)) {
-                    randomCell = getRandomCell();
-                }
-                setFoodCell([randomCell]);
-            }
-            spawnFood();
-
-            snake.grow(positionToAddTail, snake.tail.direction);
-            setSnake(snake);
-
-            setScore(s=>++s);
-        }
-    }
+    
     
 
     function getDirection(currentPosition, direction) {
@@ -185,8 +182,6 @@ function Board({ isGameStart, startGame, tickRate, setTickRate, endGame, score, 
     }
 
 
-
-
     const entities = entitiesToCoords({
         snake: snakeCells,
         snake__head: [snake.head.val],
@@ -194,10 +189,10 @@ function Board({ isGameStart, startGame, tickRate, setTickRate, endGame, score, 
     }, tickDirection.current);
 
     return (
-        <div>
+        <>
             <button onClick={() => gameOver()}>gameover</button>
             <button onClick={() => handleMove()}>manual move</button>
-            <button onClick={() => handleEat()}>eat</button>
+            {/* <button onClick={() => handleEat()}>eat</button> */}
             <button onClick={() => endGame()}>end</button>
             {direction}
 
@@ -209,10 +204,10 @@ function Board({ isGameStart, startGame, tickRate, setTickRate, endGame, score, 
                     if (entities[cell]) {
                         className += ' ' + entities[cell];
                     }
-                    return <div key={cell} className={className}>{cell}</div>;
+                    return <div key={cell} className={className}></div>;
                 })}
             </div>
-        </div>
+        </>
     );
 }
 

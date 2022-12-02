@@ -1,19 +1,22 @@
+html, body, #root {
+    height:100%;
+}
 .cell {
     display:inline-block;
     outline:1px solid red;
-    width:50px;
-    height:50px;
-    z-index:-1; /* put snake head below overlay */
+    width:40px;
+    height:40px;
 }
 .snake {
-    background:red;
+    background:#6c3b3b;
 }
 .food {
-    background:green;
+    background-image:url('./image/apple.png');
+    background-size:100%;
 }
 .snake__head {
     position:relative;
-    clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 100% 100%, 0 100%, 0% 70%, 0% 30%);
+    clip-path:polygon(30% 0%, 70% 0%, 101% 30%, 101% 70%, 101% 101%, 0 101%, 0% 70%, 0% 30%);
 }
 .snake__head::before{
     content:'';
@@ -34,19 +37,20 @@
     left:65%;
 }
 .snake__head--RIGHT {
-    transform: rotate(90deg);
+    transform:rotate(90deg);
 }
 .snake__head--DOWN {
-    transform: rotate(180deg);
+    transform:rotate(180deg);
 }
 .snake__head--LEFT {
-    transform: rotate(270deg);
+    transform:rotate(270deg);
 }
 
 #board {
     position:relative;
     display:flex;
     flex-flow:row wrap;
+    background-image: url('./image/grass.png');
 }
 
 .game-container {

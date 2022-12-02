@@ -13,10 +13,8 @@ const style = {
     flexFlow:'column',
     justifyContent:'center',
     alignItems:'center',
+    zIndex:2,
 };
-
-
-
 
 const StartScreen = memo(function StartScreen({ handleStart, setTickRate, score }) {
     console.log('render start');
