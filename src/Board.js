@@ -36,8 +36,8 @@ const initialState = {
 
 const board = createBoard();
 
-function Board({ isGameStart, startGame, tickRate, setTickRate, endGame, score, setScore}) {
-    console.log('render board');
+function Board({ isGameStart, startGame, tickRate, setTickRate, endGame, setScore}) {
+    console.log('render board'); //todo rm
     const [snake, setSnake] = useState(initialState.snake);
     const [snakeCells, setSnakeCells] = useState(initialState.snakeCells);
     const [foodCell, setFoodCell] = useState(initialState.foodCell);
@@ -86,22 +86,15 @@ function Board({ isGameStart, startGame, tickRate, setTickRate, endGame, score, 
         tickDirection.current = getValidDirection(tickDirection.current, direction);
 
         const newHeadCoord = getDirection(snake.head.val, tickDirection.current);
-        // check new coord for collision
-        // todo combine collision checker
-        const isCollision = checkBoardCollision(newHeadCoord);
-        if (isCollision) {
-            console.log('board');
-            endGame();
-            return;
-        }
-        if (checkSnakeCollision(newHeadCoord)) {
+
+        // check collision
+        if (checkBoardCollision(newHeadCoord) || checkSnakeCollision(newHeadCoord)) {
             console.log('self');
             endGame();
             return;
         }
 
         if (checkFoodCollision(newHeadCoord)) {
-            console.log('eat food');
             (function handleEat() {
                 // use opposite direction of tail to determine where to add new tail
                 const positionToAddTail = getDirection(snake.tail.val, SNAKE_DIRECTION_OPPOSITE[snake.tail.direction]);
@@ -114,7 +107,7 @@ function Board({ isGameStart, startGame, tickRate, setTickRate, endGame, score, 
         
                 function spawnFood() {
                     let randomCell = getRandomCell();
-                    while (snake.cells.has(randomCell) && randomCell === newHeadCoord) {
+                    while (snake.cells.has(randomCell) || randomCell === newHeadCoord) {
                         randomCell = getRandomCell();
                     }
                     setFoodCell([randomCell]);
@@ -129,9 +122,6 @@ function Board({ isGameStart, startGame, tickRate, setTickRate, endGame, score, 
         setSnake(snake);
         setSnakeCells(new Set(snake.cells));
     }
-
-    
-    
 
     function getDirection(currentPosition, direction) {
         let [row, col] = currentPosition.split('-');
@@ -169,19 +159,6 @@ function Board({ isGameStart, startGame, tickRate, setTickRate, endGame, score, 
         return foodCell.includes(coord);
     }
 
-    function gameOver() {
-
-        setScore(0);
-        setSnake(() => {
-            return initialState.snake();
-        });
-        setSnakeCells(initialState.snakeCells);
-        setFoodCell(initialState.foodCell);
-        setDirection(initialState.direction);
-        tickDirection.current = initialState.direction;
-    }
-
-
     const entities = entitiesToCoords({
         snake: snakeCells,
         snake__head: [snake.head.val],
@@ -190,14 +167,8 @@ function Board({ isGameStart, startGame, tickRate, setTickRate, endGame, score, 
 
     return (
         <>
-            <button onClick={() => gameOver()}>gameover</button>
-            <button onClick={() => handleMove()}>manual move</button>
-            {/* <button onClick={() => handleEat()}>eat</button> */}
-            <button onClick={() => endGame()}>end</button>
-            {direction}
-
             <div id="board" style={{width:BOARD_WIDTH}}>
-                {!isGameStart && <StartScreen handleStart={startGame} setTickRate={setTickRate} score={score}/>}
+                {!isGameStart && <StartScreen handleStart={startGame} setTickRate={setTickRate}/>}
 
                 {board.map(cell => {
                     let className = 'cell';
@@ -246,7 +217,6 @@ function entitiesToCoords(boardEntities, direction = '') {
     return board;
 }
 
-//todo comment
 function getRandomCell() {
     function getRandomInt(min, max) {
         min = Math.ceil(min);

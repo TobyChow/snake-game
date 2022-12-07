@@ -49,7 +49,6 @@ class Snake {
             arr.push(curr.val);
             curr = curr.next;
         }
-        console.log(arr); // todo remove
         return arr;
     }
 }

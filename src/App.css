@@ -3,7 +3,6 @@ html, body, #root {
 }
 .cell {
     display:inline-block;
-    outline:1px solid red;
     width:40px;
     height:40px;
 }
@@ -12,7 +11,8 @@ html, body, #root {
 }
 .food {
     background-image:url('./image/apple.png');
-    background-size:100%;
+    background-size:contain;
+    background-repeat:no-repeat;
 }
 .snake__head {
     position:relative;
@@ -51,8 +51,14 @@ html, body, #root {
     display:flex;
     flex-flow:row wrap;
     background-image: url('./image/grass.png');
+    border:10px solid #060606;
 }
 
 .game-container {
-    border:1px solid blue;
+    display:flex;
+    flex-flow:column;
+    justify-content: center;
+    align-items: center;
+    height:100%;
+    background:#495a49;
 }

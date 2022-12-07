@@ -3,11 +3,11 @@ const TICK_RATE = {
     'medium': 100,
     'hard': 75,
 }
+
 const buttonContainerStyle = {
     display:'flex',
     justifyContent:'space-between'
 }
-
 
 
 function Button({ text, handleOnClick, cssOptions }) {
@@ -34,8 +34,7 @@ function Button({ text, handleOnClick, cssOptions }) {
 export default function SelectDifficulty({ score, handleDifficultySelect }) {
     return (
     <div>
-        <h1 style={{textAlign:'center'}}>Score: {score}</h1>
-        <h1 style={{textAlign:'center'}}>Select Difficulty</h1>
+        <h1 style={{textAlign:'center', fontWeight:500}}>Select Difficulty</h1>
         <div style={buttonContainerStyle}>
             <Button 
                 text='easy' 
@@ -61,9 +60,6 @@ export default function SelectDifficulty({ score, handleDifficultySelect }) {
                     background:'#422222'
                 }}
             />
-            {/* <button onClick={() => handleDifficultySelect(TICK_RATE['easy'])}>Easy</button> */}
-            {/* <button onClick={() => handleDifficultySelect(TICK_RATE['medium'])}>Medium</button> */}
-            {/* <button onClick={() => handleDifficultySelect(TICK_RATE['hard'])}>Hard</button> */}
         </div>
     </div>
     );
