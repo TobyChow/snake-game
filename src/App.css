@@ -16,7 +16,7 @@ html, body, #root {
 }
 .snake__head {
     position:relative;
-    clip-path:polygon(30% 0%, 70% 0%, 101% 30%, 101% 70%, 101% 101%, 0 101%, 0% 70%, 0% 30%);
+    clip-path:polygon(30% 0%, 70% 0%, 105% 30%, 105% 70%, 105% 105%, 0 105%, 0% 70%, 0% 30%);
 }
 .snake__head::before{
     content:'';
