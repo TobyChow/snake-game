@@ -1,4 +1,6 @@
 # About
+[Demo Link](https://snake-game-toby.vercel.app/) - https://snake-game-toby.vercel.app/
+
 Recreate the classic snake game.
 
 Use arrow keys to control the snake's direction.
@@ -54,13 +56,13 @@ In a DLL, finding the new tail is O(1), since there is a reference to the previo
 | Remove Tail | O(1) | O(n) | O(1)
 
 # Analyzing Time Complexity
-| Event | Time Complexity | Space Complexity |
-| :---: | :---: | :---: |
-| Move | O(1) | O(1) |
-| Eat | O(1) | O(1) |
-| Collision with board | O(1) | O(1) |
-| Collision with itself | O(n) | O(1) |
-| Render | O(n) | --- |
+| Event | Time Complexity
+| :---: | :---: |
+| Move | O(1) |
+| Eat | O(1) |
+| Collision with board | O(1) |
+| Collision with itself | O(n) |
+| Render | O(n) |
 
 # Install
 ```
